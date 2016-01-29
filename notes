@@ -16,3 +16,11 @@ What Is Service Chaining?
 ODL的SFC入门和Demo
   http://www.sdnlab.com/13826.html
   
+connect to host 192.168.56.10 port 22: Connection refused
+  1. 运行 ps -e | grep ssh，查看是否有sshd进程
+  2. 通过 /etc/init.d/ssh -start 启动server进程
+  3. or sudo apt-get install openssh-server命令安装
+  4. #root login with password
+      vim /etc/ssh/sshd_config
+      PermitRootLogin yes
+      
