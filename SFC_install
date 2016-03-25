@@ -1,0 +1,73 @@
+操作系统
+  1) 版本。Ubuntu14.04 server版
+  2) 系统更新。命令如下：
+    sudo apt-get update //更新源
+    sudo apt-get upgrade //更新相关软件
+    sudo apt-get dist-upgrade //更新
+
+
+安装JDK
+  1) sudo apt-get install openjdk-7-jdk //安装
+  2) //配置环境变量
+  vim ~/.bashrc
+    export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64    
+    export JRE_HOME=${JAVA_HOME}/jre    
+    export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib    
+    export PATH=${JAVA_HOME}/bin:$PATH 
+  source ~/.bashrc
+  3) 验证是否安装成功
+  java -version
+  
+
+安装Maven
+  1) wget http://ftp.wayne.edu/apache/maven/maven-3/3.3.3/binaries/ apache-maven-3.3.3-bin.tar.gz //下载
+  2) //安装
+  sudo mkdir /usr/local/apache-maven
+  sudo mv apache-maven-3.3.3-bin.tar.gz /usr/local/apache-maven
+  sudo tar -xzvf /usr/local/apache-maven/apache-maven-3.3.3-bin.tar.gz -C /usr/local/apache-maven/
+  sudo update-alternatives --install /usr/bin/mvn mvn /usr/local/apache-maven/apache-maven-3.3.3/bin/mvn 1
+  sudo update-alternatives --config mvn
+  3) //配置
+  vim ~/.bashrc
+    export M2_HOME=/usr/local/apache-maven/apache-maven-3.3.3
+    export MAVEN_OPTS="-Xms256m -Xmx512m" # Very important to put the "m" on the end
+    export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64 # This matches sudo update-alternatives --config java
+  source ~/.bashrc
+  4) //验证
+  mvn -v
+  
+  
+安装Git
+  sudo apt-get install git-core
+  
+  
+编辑~/.m2/settings.xml
+  //OpenDaylight在Maven的中央仓库外维护它自己的库，这意味着Maven无法解析默认OpenDaylight清单文件。OpenDaylight是按照多个项目相互依赖来组织的，即构建一个项目需要依赖其他项目。因此，必须进行配置使Maven知道OpenDaylight的仓库，通过编辑~/.m2/settings.xml文件即可实现。
+  cp -n ~/.m2/settings.xml{,.orig}
+  wget -q -O - https://raw.githubusercontent.com/opendaylight/ odlparent/master/settings.xml > ~/.m2/settings.xml
+  
+  
+安装Python 3.4
+  sudo apt-get install libssl-dev openssl
+  cd /opt
+  wget python.org/ftp/python/3.4.1/Python-3.4.1.tgz
+  tar -xzvf Python-3.4.1.tgz
+  cd Python-3.4.1/
+  ./configure
+  make
+  sudo make install
+  sudo ln -fs /opt/Python-3.4.1/python /usr/bin/python //设置Python3.4.1为默认的Python版本
+  apt-get install python3-pip
+  pip3 install flask
+  pip3 install requests
+  pip3 install netifaces
+  pip3 install paramiko
+  
+  
+部署SFC环境
+  git clone https://git.opendaylight.org/gerrit/p/sfc.git  --branch stable/lithium --single-branch sfc-lithium
+  mvn clean install -Dmaven.test.skip=true
+
+
+运行
+  ./sfc-lithium/sfc-karaf/target/assembly/bin/karaf
